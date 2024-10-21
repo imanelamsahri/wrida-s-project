@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wrida's Project</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="/static/img/favicon.ico"/>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-styleeditor@latest/dist/css/Leaflet.StyleEditor.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.pinsearch/src/Leaflet.PinSearch.css" crossorigin="" />
+    
+    <!-- Leaflet Measure CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #1aa7a0;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .logo-title img {
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .top-section h1 {
+            font-family: 'Lobster', cursive;
+            font-size: 36px;
+            margin: 0;
+            color: #F4A300;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+        }
+
+        .navigation a {
+            margin-left: 15px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navigation span {
+            display: inline-block;
+            width: 1px;
+            height: 20px;
+            background-color: #fff;
+            margin: 0 10px;
+        }
+
+        .navigation a:hover {
+            color: #ffd700;
+        }
+
+        .map-description {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0; 
+            color: #1a1a1a; 
+            font-family: Arial, sans-serif; 
+        }
+
+        #map {
+            width: 100%;
+            height: 400px;
+            max-width: 600px;
+            border: 2px solid #1a1a1a;
+            border-radius: 8px;
+            margin: 20px auto; 
+        }
+
+        .project-info {
+            font-size: 16px;
+            margin: 20px 0;
+            color: #333;
+            text-align: justify;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            color: #333;
+            font-size: 14px;
+            padding: 10px 0;
+            background-color: #1aa7a0;
+            border-radius: 10px;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        footer a {
+            color: #F4A300;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        footer i {
+            font-size: 24px;
+        }
+
+        .copyright {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-section">
+        <div class="logo-title">
+            <img src="lily.jpg" alt="Flower logo">
+            <h1>Wrida's Project</h1>
+        </div>
+        <div class="navigation">
+            <a href="#about">About</a>
+            <span></span>
+            <a href="#resources">Resources</a>
+            <span></span>
+            <a href="#getinvolved">Get Involved</a>
+        </div>
+    </div>
+
+    <div class="map-description">
+        <strong>This site is dedicated to the visualization of the universities located in Madinat Al Irfane, Rabat.</strong>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Nouveau paragraphe sur le projet -->
+    <div class="project-info">
+        L'objectif de cette création de page web est d'utiliser la bibliothèque Leaflet, qui est une librairie JavaScript permettant d'afficher des cartes. J'ai transformé des fichiers Shapefile en format GeoJSON afin de présenter aisément les données géographiques sur la carte de mon application web. 
+        Cette méthode permet aux utilisateurs d'interagir avec la carte et de visualiser les informations géospatiales directement sur la page, rendant ainsi les données plus accessibles et dynamiques.
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-styleeditor@latest/dist/javascript/Leaflet.StyleEditor.min.js"></script>
+    <script src="https://unpkg.com/leaflet.pinsearch/src/Leaflet.PinSearch.js" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script> <!-- Script pour l'outil de mesure -->
+    <script src="wrida.geojson"></script> 
+
+    <script>
+        const map = L.map('map').setView([33.98159, -6.86503], 13); // Centre sur Madinat Al Irfane
+
+        const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Marqueur pour Madinat Al Irfane
+        L.marker([33.98159, -6.86503]).addTo(map)
+            .bindPopup("<b>Madinat Al Irfane</b><br>Universités/Madinat Al Irfane.")
+            .openPopup();
+
+        // Marqueur pour la Bibliothèque Nationale
+        L.marker([34.00856, -6.84207]).addTo(map)
+            .bindPopup("<b>Bibliothèque Nationale</b><br>Centre de connaissance et d'information.");
+
+        // Ajouter le GeoJSON
+        L.geoJSON(ny).addTo(map);
+
+        // PinSearch component
+        var searchBar = L.control.pinSearch({
+            position: 'topright',
+            placeholder: 'Search...',
+            buttonText: 'Search',
+            onSearch: function(query) {
+                console.log('Search query:', query);
+                // Handle the search query here
+            },
+            searchBarWidth: '200px',
+            searchBarHeight: '30px',
+            maxSearchResults: 5
+        }).addTo(map);
+
+        // Initialize the StyleEditor
+        const styleEditor = L.control.styleEditor({
+            position: "topleft"
+        });
+        map.addControl(styleEditor);
+
+        map.on('styleeditor:changed', function(element){
+            console.log(element); // Logs the edited element
+        });
+
+        // Initialize the Measure control
+        var measureControl = new L.Control.Measure({
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares',
+            position: 'topleft' // Position de l'outil de mesure
+        });
+
+        // Ajouter le contrôle de mesure après l'éditeur de style pour qu'il soit en dessous
+        map.addControl(measureControl);
+    </script>
+
+    <footer>
+        <a href="mailto:votreemail@example.com"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.facebook.com/votrepage" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/votreprofil" target="_blank"><i class="fab fa-instagram"></i></a>
+        <div class="copyright">© 2024 Wrida's Project. All rights reserved.</div>
+    </footer>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
